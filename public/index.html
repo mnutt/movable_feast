@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+
+<head>
+  <script src="/js/jquery-1.7.min.js"></script>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    WEB_SOCKET_SWF_LOCATION = '/socket.io/WebSocketMain.swf';
+  </script>
+
+  <script src="/js/helpers.js"></script>
+  <script src="/js/websocket.js"></script>
+
+  <script src="/js/widgets/base.js"></script>
+  <script src="/js/widgets/graph.js"></script>
+  <script src="/js/widgets/count.js"></script>
+  <script src="/js/widgets/logger.js"></script>
+
+  <title>Movable Feast</title>
+
+  <link rel="stylesheet" media="all" href="/css/main.css" />
+</head>
+
+<body>
+
+  <h1>Movable Feast</h1>
+
+  <div class="hummingbird_graph" id="total">
+
+    <h2 class="graph_title">Total: <span class="value">0</span> Amps</h2>
+
+    <div class="axis_left"></div>
+    <div class="graph"></div>
+    <div class="axis_right"></div>
+
+  </div>
+
+  <button id="test_it" style="margin-left: 60px;">Send test traffic</button>
+  <button id="test_cart" style="margin-left: 60px;">Send test traffic to cart</button>
+
+  <script>
+    $(document).ready(function() {
+      hummingbirdSocket = new Hummingbird.WebSocket();
+      hummingbirdSocket.start();
+
+      $("#total").hummingbirdGraph(hummingbirdSocket.socket,
+                                 {
+                                   from: "levels",
+                                   bgLineColor: "#EEE",
+                                   tickLineColor: "#EEE"
+                                 });
+
+      $("#total h2.graph_title span.value").hummingbirdCount(hummingbirdSocket.socket,
+                                                             {
+                                                               from: "levels",
+                                                               every: 20
+                                                             });
+
+      new Hummingbird.Logger(window,
+                             hummingbirdSocket.socket,
+                             {
+                               from: "levels",
+                               every: 20
+                             });
+
+      $("#test_it").click(function(e) {
+        e.preventDefault();
+
+        var img = document.createElement('img');
+        var rand = Math.floor(Math.random() * 20);
+        img.src = "http://localhost:8000/tracking_pixel.gif?level=" + rand + "&f=" + Math.ceil(Math.random() * 1000000)
+      });
+    });
+  </script>
+
+</body>
+</html>
