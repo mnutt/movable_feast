@@ -1,0 +1,6 @@
+.rvmrc
+/node_modules/
+/log/*.log
+/log/**/*.log
+/pids/*
+/data/*
