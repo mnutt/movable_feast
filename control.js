@@ -6,7 +6,7 @@ app.get("/", function(req, res) {
   require('child_process').exec("sudo killall apcupsd", function(err, stdout, stderr) {
     console.log(stderr);
     console.log(stdout);
-    child_process.exec("sudo apcupsd -f /etc/apcupsd/apcupsd.conf -o", function(err, stdout, stderr) {
+    child_process.exec("sleep 1; sudo apcupsd -f /etc/apcupsd/apcupsd.conf -o", function(err, stdout, stderr) {
       console.log(stderr);
       console.log(stdout);
       child_process.exec("sleep 5; sudo apcupsd -f /etc/apcupsd/apcupsd.conf", function(err, stdout, stderr) {
