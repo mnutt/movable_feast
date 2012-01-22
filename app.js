@@ -3,6 +3,7 @@ var sio = require('socket.io');
 var child_process = require('child_process');
 var url = require('url');
 var fs = require('fs');
+var http = require('http');
 var postmark = require('postmark')("ca6fb40e-0060-4b44-b4d9-bbdc76409b61");
 
 var app = express.createServer();
@@ -62,7 +63,7 @@ app.get("/shutdown", function(req, res) {
 
   var query = url.parse(req.url, true).query;
 
-  child_process.exec("sudo killall apcupsd && sudo apcupsd -f /etc/apcupsd/apcupsd.conf -o", function(err, stdout, stderr) {});
+  http.get({ host: 'localhost', port: 3352, path: '/' }, function(res) { console.log("SHUTDOWN")});
   io.sockets.emit('shutdown', query.person || "someone");
 
   res.writeHead(200, {});
