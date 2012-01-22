@@ -4,10 +4,92 @@ var child_process = require('child_process');
 var url = require('url');
 var fs = require('fs');
 var postmark = require('postmark')("ca6fb40e-0060-4b44-b4d9-bbdc76409b61");
+var everyauth = require('everyauth');
+var http = require('http');
 
 var app = express.createServer();
 
 app.use(express.static(__dirname + '/public'));
+
+
+var oauthAccessToken = null;
+
+everyauth.oauth2
+  .apiHost("http://dev.tendrilinc.com")
+  .oauthHost("http://dev.tendrilinc.com")
+  .appId("0c30adc89f7ab9d4f26cc9702a77488d")
+  .appSecret("e8c58507da224cf10b24b8d8e02cde0a")
+  .authPath("/oauth/authorize")
+  .accessTokenPath("/oauth/access_token")
+  .findOrCreateUser(function() {
+    return {user: "nouser"};
+  })
+  .getSession(function(req) {
+    return {session:"dontuse"};
+  })
+  .fetchOAuthUser(function(accessToken) {
+    var p = this.Promise();
+    console.log(accessToken);
+    oauthAccessToken = accessToken;
+    
+    this.oauth._request("GET", this.apiHost() + '/connect/user/current-user', {"Access_Token": accessToken, 'Accept': 'application/json', 'Content-Type': 'application/json'}, "", accessToken, function(err, data) {
+//    this.oauth.get(this.apiHost() + '/connect/user/current-user', accessToken, function (err, data) {
+      console.log(data);
+      if (err) return p.fail(err);
+      var oauthUser = JSON.parse(data);
+      p.fulfill(oauthUser);
+    })
+    return p;
+  })
+  .redirectPath("/oauthSuccess")
+  .authQueryParam("connectURL", "dev.tendrilinc.com")
+  .authQueryParam("scope", "account billing consumption")
+  .authQueryParam("response_type", "code")
+  .accessTokenHttpMethod("get")
+  .accessTokenParam("grant_type", "authorization_code")
+  .entryPath('/auth/oauth2')
+  .callbackPath('/auth/oauth2/callback')
+  .myHostname("http://local.host:3002");
+
+function turnVoltOff() { 
+  console.log("oauth token: " + oauthAccessToken);
+
+  options = {
+    host: 'dev.tendrilinc.com',
+    port: 80,
+    path: '/connect/device-action?access_token=' + oauthAccessToken,
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Access_Token': oauthAccessToken
+    }
+  }
+
+  post_body = 
+    ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+     '<setVoltDataRequest xmlns="http://platform.tendrilinc.com/tnop/extension/ems" deviceId="001db70000024685" locationId="1">',
+     '<data>',
+       '<mode>Off</mode>',
+     '</data>',
+     '</setVoltDataRequest>'].join('\n');
+
+  var req = http.request(options, function(res) {
+
+    res.setEncoding('utf8');
+    res.on('data', function(chunk) {
+      console.log('BODY: ' + chunk);
+    });
+  });
+  req.write(post_body);
+  req.end();
+}
+
+function checkVoltStatus() {
+
+}
+
+app.use(everyauth.middleware());
+everyauth.helpExpress(app);
 
 var io = sio.listen(app);
 
@@ -63,5 +145,10 @@ app.get("/shutdown", function(req, res) {
   res.writeHead(200, {});
   res.end("Shutdown complete!");
 });
+
+app.get("/tendril_shutdown", function(req, res) {
+  turnVoltOff();
+});
+
 
 app.listen(3002);
