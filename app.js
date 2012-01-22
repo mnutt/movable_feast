@@ -34,14 +34,11 @@ everyauth.oauth2
     var p = this.Promise();
     console.log(accessToken);
     oauthAccessToken = accessToken;
-    
-    this.oauth._request("GET", this.apiHost() + '/connect/user/current-user', {"Access_Token": accessToken, 'Accept': 'application/json', 'Content-Type': 'application/json'}, "", accessToken, function(err, data) {
-//    this.oauth.get(this.apiHost() + '/connect/user/current-user', accessToken, function (err, data) {
-      console.log(data);
-      if (err) return p.fail(err);
-      var oauthUser = JSON.parse(data);
-      p.fulfill(oauthUser);
-    })
+
+    setTimeout(function() {
+      p.fulfill({token: accessToken});
+    }, 1);
+
     return p;
   })
   .redirectPath("/oauthSuccess")
@@ -52,9 +49,9 @@ everyauth.oauth2
   .accessTokenParam("grant_type", "authorization_code")
   .entryPath('/auth/oauth2')
   .callbackPath('/auth/oauth2/callback')
-  .myHostname("http://local.host:3002");
+  .myHostname("http://" + host + ":3002");
 
-function turnVoltOff() { 
+function turnVoltOff() {
   console.log("oauth token: " + oauthAccessToken);
 
   options = {
@@ -68,7 +65,7 @@ function turnVoltOff() {
     }
   }
 
-  post_body = 
+  post_body =
     ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
      '<setVoltDataRequest xmlns="http://platform.tendrilinc.com/tnop/extension/ems" deviceId="001db70000024685" locationId="1">',
      '<data>',
