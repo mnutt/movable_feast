@@ -47,7 +47,7 @@ var sendInterval = setInterval(function() {
 function sendEmail() {
   for(var address in emailAddresses) {
     var name = emailAddresses[address];
-    console.log("Sending email to " + emailAddress + ".");
+    console.log("Sending email to " + address + ".");
     postmark.send({
       "From": "Movable Feast <followup@alwaysbecalling.com>",
       "To": address,
