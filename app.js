@@ -177,7 +177,8 @@ app.get("/open", function(req, res) {
 
   io.sockets.emit('person', query.person || "someone");
 
-  res.writeHead(200, {});
+  res.writeHead(200, { 'Cache-Control': "no-cache max-age=0",
+                       'Expires': "Thu, 01 Dec 1994 16:00:00 GMT" });
   res.end(pixel.data);
 });
 
