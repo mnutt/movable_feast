@@ -175,7 +175,9 @@ function sendEmail() {
 app.get("/open", function(req, res) {
   var query = url.parse(req.url, true).query;
 
-  io.sockets.emit('person', query.person || "someone");
+  setTimeout(function() {
+    io.sockets.emit('person', query.person || "someone");
+  }, 1000);
 
   res.writeHead(200, { 'Cache-Control': "no-cache max-age=0",
                        'Expires': "Thu, 01 Dec 1994 16:00:00 GMT" });
