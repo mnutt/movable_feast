@@ -4,6 +4,7 @@ var child_process = require('child_process');
 var url = require('url');
 var fs = require('fs');
 var http = require('http');
+var pixel = require('./pixel');
 var postmark = require('postmark')("ca6fb40e-0060-4b44-b4d9-bbdc76409b61");
 
 var app = express.createServer();
@@ -57,6 +58,15 @@ function sendEmail() {
     });
   }
 }
+
+app.get("/open", function(req, res) {
+  var query = url.parse(req.url, true).query;
+
+  io.sockets.emit('person', query.person || "someone");
+
+  res.writeHead(200, {});
+  res.end(pixel.data);
+});
 
 app.get("/shutdown", function(req, res) {
   clearInterval(fetchInterval);

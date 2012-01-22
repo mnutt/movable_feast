@@ -19,6 +19,25 @@ body {
   font-size: 1.3em;
 }
 
+#person-list {
+  float: right;
+  text-align: right;
+}
+
+#person-list span.person {
+  background-color: #476d90;
+  color: #FFF;
+  border-radius: 3px;
+  padding: 5px;
+  margin-left: 5px;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+#person-list #opened-by {
+  display: none;
+}
+
 h2.graph_title {
   text-transform: uppercase;
   font-size: 0.9em;

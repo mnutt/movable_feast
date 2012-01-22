@@ -29,7 +29,10 @@
 
   <div class="hummingbird_graph" id="total" style="position: relative;">
 
-    <h2 class="graph_title" style="padding-left: 10px;">Total: <span class="value">0</span> Amps</h2>
+    <div style="width: 810px; padding-left: 10px;">
+      <div style="float: right;" id="person-list"><span id="opened-by">Alerted:</span></div>
+      <h2 class="graph_title">Total: <span class="value">0</span> Amps</h2>
+    </div>
 
     <div class="axis_left"></div>
     <div class="graph"></div>
@@ -72,6 +75,16 @@
       hummingbirdSocket.socket.on('shutdown', function(person) {
         $("#shutdown span.person").text(person);
         $("#shutdown").show();
+      });
+
+      var people = {};
+      hummingbirdSocket.socket.on('person', function(person) {
+        if(people[person]) { return; }
+        var personSpan = $("<span class='person'>" + person + "</span>");
+        $("#person-list").append(personSpan);
+        $("#opened-by").show();
+
+        people[person] = true;
       });
 
       $("#test_it").click(function(e) {
