@@ -106,7 +106,7 @@ $.extend(Hummingbird.Graph.prototype, {
     var millisecsBeforeUpdating = 0;
     if (this.lineWidth != null && this.messageRate != null) {
       var millisecsPerTick = 1000 / this.messageRate;
-      var ticksPerFrame = this.graphWidth / (this.lineWidth * 10.0);
+      var ticksPerFrame = this.graphWidth / (this.lineWidth * 15.0);
       millisecsBeforeUpdating = millisecsPerTick * ticksPerFrame;
     }
 

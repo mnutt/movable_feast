@@ -27,13 +27,18 @@
 
   <h1>Movable Feast</h1>
 
-  <div class="hummingbird_graph" id="total">
+  <div class="hummingbird_graph" id="total" style="position: relative;">
 
     <h2 class="graph_title">Total: <span class="value">0</span> Amps</h2>
 
     <div class="axis_left"></div>
     <div class="graph"></div>
     <div class="axis_right"></div>
+
+    <div id="shutdown">
+      Shut down by<br/>
+      <span class="person"></span>
+    </div>
 
   </div>
 
@@ -64,6 +69,11 @@
                                from: "levels",
                                every: 20
                              });
+
+      hummingbirdSocket.socket.on('shutdown', function(person) {
+        $("#shutdown span.person").text(person);
+        $("#shutdown").show();
+      });
 
       $("#test_it").click(function(e) {
         e.preventDefault();
