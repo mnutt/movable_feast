@@ -22,6 +22,8 @@ Hummingbird.Count = function(element, socket, options) {
   };
 
   this.options = $.extend(defaults, options);
+
+  this.cost = $("#cost");
   this.initialize();
 };
 
@@ -30,7 +32,10 @@ Hummingbird.Count.prototype = new Hummingbird.Base();
 $.extend(Hummingbird.Count.prototype, {
   name: "Count",
   onMessage: function(value, average) {
-    average = average / 2;
+    average = average * 3 / 2;
     this.element.text(average.toFixed(this.options.decimalPlaces));
-  },
+    var price = parseFloat(this.cost.text());
+    price += (0.04 * (average / 3 / 100) / (60 * 60 * 2));
+    this.cost.text(price.toPrecision(3));
+  }
 });
