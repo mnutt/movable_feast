@@ -180,6 +180,18 @@ $.extend(Hummingbird.Graph.prototype, {
     var color = this.options.barColor || this.lineColors[this.scale] || this.lineColors.def;
     if(average > 70) {
       color = "#c74e32";
+    } else if(average > 60) {
+      color = "#af5444";
+    } else if(average > 50) {
+      color = "#925b59";
+    } else if(average > 40) {
+      color = "#825e64";
+    } else if(average > 30) {
+      color = "#666579";
+    } else if(average > 20) {
+      color = "#4e6b8a";
+    } else if(average > 10) {
+      color = "#476d90";
     }
     var lineHeight = this.graphHeight - height;
 
