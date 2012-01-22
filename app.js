@@ -52,7 +52,7 @@ function sendEmail() {
       "From": "Movable Feast <followup@alwaysbecalling.com>",
       "To": address,
       "Subject": "Power Spike!",
-      "HtmlBody": emailBody.replace(/\|NAME\|/, name).replace(/localhost/, host)
+      "HtmlBody": emailBody.replace(/\|NAME\|/g, name).replace(/localhost/g, host)
     });
   }
 }
