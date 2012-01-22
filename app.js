@@ -12,15 +12,26 @@ app.use(express.static(__dirname + '/public'));
 var io = sio.listen(app);
 
 var percent = 0.0;
+var percents = [];
 
 var emailSent = false;
 var emailAddresses = ["michael@nuttnet.net"];
 var emailBody = fs.readFileSync(__dirname + '/public/email.html').toString('utf8');
+var threshold = 10;
 
 var fetchInterval = setInterval(function() {
   child_process.exec("apcaccess | grep LOAD", function(err, stdout, stderr) {
     percent = parseFloat((stdout.match(/\d+\.\d+/) || [0])[0]);
-    console.log(percent);
+
+    percents.push(percent);
+    if(percents.length > 3) { percents = percents.slice(-3); }
+
+    if(emailSent == false && (percents[0] + percents[1] + percents[2]) / 3 > threshold) {
+      sendEmail();
+      emailSent = true;
+    }
+
+    console.log("Logged power level: " + percent + "%");
   });
 }, 500);
 
@@ -52,7 +63,5 @@ app.get("/shutdown", function(req, res) {
   res.writeHead(200, {});
   res.end("Shutdown complete!");
 });
-
-sendEmail();
 
 app.listen(3002);
