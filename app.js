@@ -51,17 +51,52 @@ everyauth.oauth2
   .callbackPath('/auth/oauth2/callback')
   .myHostname("http://" + host + ":3002");
 
+
+app.get('/reading', function(req, res) {
+  readMeter(function(err, data) {
+    if(err) {
+      console.log(err);
+    }
+    console.log(data);
+  });
+});
+
+function readMeter(callback) {
+  http.get({ host: 'dev.tendrilinc.com',
+             port: 80,
+             path: '/connect/meter/read;external_account_id=aid_aw;from=2011-07-01T00:00:00-0000;to=2012-12-31T00:00:00-0000;limit-to-latest=1;source=ACTUAL',
+             headers: {
+               'Accept': 'application/json',
+               'Access_Token': oauthAccessToken,
+               'X-Route': 'sandbox'
+             }
+           }, function(res) {
+             var data = '';
+             res.on('data', function(chunk) {
+               data += chunk;
+             });
+             res.on('end', function() {
+               console.log(data);
+               try {
+                 var parsed = JSON.parse(data);
+                 callback(null, parsed);
+               } catch(e) { callback(e, null); }
+             });
+           });
+}
+
 function turnVoltOff() {
   console.log("oauth token: " + oauthAccessToken);
 
   options = {
     host: 'dev.tendrilinc.com',
     port: 80,
-    path: '/connect/device-action?access_token=' + oauthAccessToken,
+    path: '/connect/device-action',
     method: 'POST',
     headers: {
       'Accept': 'application/json',
-      'Access_Token': oauthAccessToken
+      'Access_Token': oauthAccessToken,
+      'X-Route': 'sandbox'
     }
   }
 
