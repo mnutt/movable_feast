@@ -63,7 +63,7 @@ app.get("/shutdown", function(req, res) {
 
   var query = url.parse(req.url, true).query;
 
-  http.get({ host: 'localhost', port: 3352, path: '/' }, function(res) { console.log("SHUTDOWN")});
+  http.get({ host: 'localhost', port: 3552, path: '/' }, function(res) { console.log("SHUTDOWN")});
   io.sockets.emit('shutdown', query.person || "someone");
 
   res.writeHead(200, {});
