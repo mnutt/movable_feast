@@ -7,6 +7,8 @@ var postmark = require('postmark')("ca6fb40e-0060-4b44-b4d9-bbdc76409b61");
 
 var app = express.createServer();
 
+var host = process.env.HOST || "localhost";
+
 app.use(express.static(__dirname + '/public'));
 
 var io = sio.listen(app);
@@ -15,9 +17,12 @@ var percent = 0.0;
 var percents = [];
 
 var emailSent = false;
-var emailAddresses = ["michael@nuttnet.net"];
+var emailAddresses = {
+  "michael@nuttnet.net": "Michael Nutt"
+};
+
 var emailBody = fs.readFileSync(__dirname + '/public/email.html').toString('utf8');
-var threshold = 10;
+var threshold = 80;
 
 var fetchInterval = setInterval(function() {
   child_process.exec("apcaccess | grep LOAD", function(err, stdout, stderr) {
@@ -40,14 +45,14 @@ var sendInterval = setInterval(function() {
 }, 50);
 
 function sendEmail() {
-  for(var i = 0; i < emailAddresses.length; i++) {
-    var emailAddress = emailAddresses[i];
+  for(var address in emailAddresses) {
+    var name = emailAddresses[address];
     console.log("Sending email to " + emailAddress + ".");
     postmark.send({
       "From": "Movable Feast <followup@alwaysbecalling.com>",
-      "To": emailAddress,
+      "To": address,
       "Subject": "Power Spike!",
-      "HtmlBody": emailBody.replace(/\|ADDRESS\|/, emailAddress)
+      "HtmlBody": emailBody.replace(/\|NAME\|/, name).replace(/localhost/, host)
     });
   }
 }
@@ -62,6 +67,18 @@ app.get("/shutdown", function(req, res) {
 
   res.writeHead(200, {});
   res.end("Shutdown complete!");
+});
+
+app.get("/test", function(req, res) {
+  percent += 25;
+  for(var i = 1; i < 10; i++) {
+    setTimeout(function() {
+      percent += Math.floor(Math.random() * 10);
+    }, i * 100);
+  }
+
+  res.writeHead(200, {});
+  res.end("");
 });
 
 app.listen(3002);

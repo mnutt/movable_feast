@@ -29,7 +29,7 @@
 
   <div class="hummingbird_graph" id="total" style="position: relative;">
 
-    <h2 class="graph_title">Total: <span class="value">0</span> Amps</h2>
+    <h2 class="graph_title" style="padding-left: 10px;">Total: <span class="value">0</span> Amps</h2>
 
     <div class="axis_left"></div>
     <div class="graph"></div>
@@ -43,7 +43,6 @@
   </div>
 
   <button id="test_it" style="margin-left: 60px;">Send test traffic</button>
-  <button id="test_cart" style="margin-left: 60px;">Send test traffic to cart</button>
 
   <script>
     $(document).ready(function() {
@@ -80,7 +79,7 @@
 
         var img = document.createElement('img');
         var rand = Math.floor(Math.random() * 20);
-        img.src = "http://localhost:8000/tracking_pixel.gif?level=" + rand + "&f=" + Math.ceil(Math.random() * 1000000)
+        img.src = "/test";
       });
     });
   </script>
