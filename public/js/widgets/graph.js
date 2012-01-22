@@ -29,7 +29,7 @@ Hummingbird.Graph = function(element, socket, options) {
 
   this.options = $.extend(defaults, options);
 
-  this.scale = 50;
+  this.scale = 100;
   this.element = element;
   this.socket = socket;
   this.graph = this.element.find('div.graph');
@@ -51,19 +51,7 @@ $.extend(Hummingbird.Graph.prototype, {
 
   createGraph: function(data) {
     this.lineColors = {
-      6400: "#FFFFFF",
-      3200: "#BBBBBB",
-      1600: "#999999",
-      800: "#983839",
-      400: "#C44939",
-      200: "#F1E29F",
-      100: "#7BE4D6",
-      50: "#65B88A",
-      25: "#5BC4B6",
-      12.5: "#3BA496",
-      6.25: "#1B8476",
-      3.125: "#006456",
-      def: "#7BF4D6"
+      def: "#416e94"
     };
 
     this.lineWidth = 3;
@@ -190,12 +178,27 @@ $.extend(Hummingbird.Graph.prototype, {
     var percent = average / this.scale;
     var height = Math.min(Math.floor(percent * this.graphHeight), this.graphHeight);
     var color = this.options.barColor || this.lineColors[this.scale] || this.lineColors.def;
+    if(average > 70) {
+      color = "#c74e32";
+    } else if(average > 60) {
+      color = "#af5444";
+    } else if(average > 50) {
+      color = "#925b59";
+    } else if(average > 40) {
+      color = "#825e64";
+    } else if(average > 30) {
+      color = "#666579";
+    } else if(average > 20) {
+      color = "#4e6b8a";
+    } else if(average > 10) {
+      color = "#476d90";
+    }
     var lineHeight = this.graphHeight - height;
 
     if(this.tick % (this.messageRate * 2) == 0) { // Every 2 seconds
       this.element.attr('data-average', average);
 
-      this.rescale(percent);
+      // this.rescale(percent);
 
       if(this.tick % 1000 == 0) { this.tick = 0; }
 

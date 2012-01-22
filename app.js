@@ -3,11 +3,14 @@ var sio = require('socket.io');
 var child_process = require('child_process');
 var url = require('url');
 var fs = require('fs');
+var http = require('http');
+var pixel = require('./pixel');
 var postmark = require('postmark')("ca6fb40e-0060-4b44-b4d9-bbdc76409b61");
 var everyauth = require('everyauth');
-var http = require('http');
 
 var app = express.createServer();
+
+var host = process.env.HOST || "localhost";
 
 app.use(express.static(__dirname + '/public'));
 
@@ -97,9 +100,12 @@ var percent = 0.0;
 var percents = [];
 
 var emailSent = false;
-var emailAddresses = ["michael@nuttnet.net"];
+var emailAddresses = {
+  "michael@nuttnet.net": "Michael Nutt"
+};
+
 var emailBody = fs.readFileSync(__dirname + '/public/email.html').toString('utf8');
-var threshold = 10;
+var threshold = 80;
 
 var fetchInterval = setInterval(function() {
   child_process.exec("apcaccess | grep LOAD", function(err, stdout, stderr) {
@@ -122,24 +128,33 @@ var sendInterval = setInterval(function() {
 }, 50);
 
 function sendEmail() {
-  for(var i = 0; i < emailAddresses.length; i++) {
-    var emailAddress = emailAddresses[i];
-    console.log("Sending email to " + emailAddress + ".");
+  for(var address in emailAddresses) {
+    var name = emailAddresses[address];
+    console.log("Sending email to " + address + ".");
     postmark.send({
       "From": "Movable Feast <followup@alwaysbecalling.com>",
-      "To": emailAddress,
+      "To": address,
       "Subject": "Power Spike!",
-      "HtmlBody": emailBody.replace(/\|ADDRESS\|/, emailAddress)
+      "HtmlBody": emailBody.replace(/\|NAME\|/g, name).replace(/localhost/g, host)
     });
   }
 }
+
+app.get("/open", function(req, res) {
+  var query = url.parse(req.url, true).query;
+
+  io.sockets.emit('person', query.person || "someone");
+
+  res.writeHead(200, {});
+  res.end(pixel.data);
+});
 
 app.get("/shutdown", function(req, res) {
   clearInterval(fetchInterval);
 
   var query = url.parse(req.url, true).query;
 
-  child_process.exec("sudo killall apcupsd && sudo apcupsd -f /etc/apcupsd/apcupsd.conf -o", function(err, stdout, stderr) {});
+  http.get({ host: 'localhost', port: 3552, path: '/' }, function(res) { console.log("SHUTDOWN")});
   io.sockets.emit('shutdown', query.person || "someone");
 
   res.writeHead(200, {});
@@ -150,5 +165,17 @@ app.get("/tendril_shutdown", function(req, res) {
   turnVoltOff();
 });
 
+
+app.get("/test", function(req, res) {
+  percent += 25;
+  for(var i = 1; i < 10; i++) {
+    setTimeout(function() {
+      percent += Math.floor(Math.random() * 10);
+    }, i * 100);
+  }
+
+  res.writeHead(200, {});
+  res.end("");
+});
 
 app.listen(3002);

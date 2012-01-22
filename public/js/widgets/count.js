@@ -17,7 +17,7 @@ Hummingbird.Count = function(element, socket, options) {
 
   var defaults = {
     averageOver: 1, // second
-    ratePerSecond: 2,
+    ratePerSecond: 4,
     decimalPlaces: 0
   };
 
@@ -30,6 +30,7 @@ Hummingbird.Count.prototype = new Hummingbird.Base();
 $.extend(Hummingbird.Count.prototype, {
   name: "Count",
   onMessage: function(value, average) {
+    average = average / 2;
     this.element.text(average.toFixed(this.options.decimalPlaces));
   },
 });

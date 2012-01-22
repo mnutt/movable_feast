@@ -1,1 +1,1 @@
-ssh -R 3551:localhost:3551 dyang@watchtower.local
+ssh -R 3552:localhost:3552 -R 3551:localhost:3551 dyang@watchtower.local
