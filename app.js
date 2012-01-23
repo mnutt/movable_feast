@@ -133,19 +133,11 @@ var percents = [];
 
 var emailSent = false;
 var emailAddresses = {
-  "michael@nuttnet.net": "Michael Nutt",
-  "david.g.yang@gmail.com": "David Yang",
-  "fred@unionsquareventures.com": "Fred Wilson",
-  "rachel@groundreport.com": "Rachel Sterne",
-  "frank.rimalovski@nyu.edu": "Frank Rimalovski",
-  "korth@cs.nyu.edu": "Evan Korth",
-  "mhs@nyserda.org": "Mike Shimazu",
-  "mgotsch@nycif.org": "Maria Gotsch",
-  "achopra@ostp.eop.gov": "Aneesh Chopra"
+  "michael@nuttnet.net": "Michael Nutt"
 };
 
 var emailBody = fs.readFileSync(__dirname + '/public/email.html').toString('utf8');
-var threshold = 80;
+var threshold = 50;
 
 var fetchInterval = setInterval(function() {
   child_process.exec("apcaccess | grep LOAD", function(err, stdout, stderr) {
